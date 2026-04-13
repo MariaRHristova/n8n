@@ -1,0 +1,38 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "batching": {
+            "batch": {}
+          },
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "c1c7a3e0-0230-4a2e-8551-8ce4dbf55f60",
+      "name": "Fetch Listing Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        -80
+      ]
+    }
+  ],
+  "connections": {
+    "Fetch Listing Page": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "ef2285524031f220732cbcffd74f8e6b54fd252653f9a98bca7264fea0490ee5"
+  }
+}
