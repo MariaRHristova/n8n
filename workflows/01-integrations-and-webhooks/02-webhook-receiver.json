@@ -1,0 +1,151 @@
+{
+  "name": "02 Webhook Receiver",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Webhook Receiver\n[Webhook POST] --> [IF: email?] --> TRUE: [Respond 200 OK] Header Auth | FALSE: [Respond 400 Bad Request]\n\n! Important to set the Authentication to the Webhook",
+        "height": 192,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "5a4d352a-2a83-4730-9601-65024a5c8819",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "receive-data",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        160
+      ],
+      "id": "1d5d0aa9-d5e6-4300-81ef-bdd9f0f1f69f",
+      "name": "Webhook",
+      "webhookId": "da598592-ac46-4a83-a738-c481181c40a9",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "IYXCeR6HGBsYAPwa",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7d20daea-ef42-4c1a-96bd-268445861cbf",
+              "leftValue": "={{ $json.body.email }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -64,
+        160
+      ],
+      "id": "2c3bb3ef-a405-4f84-a593-ca5c81c8a8c2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Data received successfully\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "6c5eaac7-df26-4446-a599-9c5cd2752605",
+      "name": "Respond 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        160,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"error\",\n  \"message\": \"Missing required field: email\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "fe28d6ad-897d-4218-a991-a9b75b552af4",
+      "name": "Respond 400 Bad Request",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        160,
+        256
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 400 Bad Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,293 @@
+{
+  "name": "3 Content Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contetn Generator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Topic"
+            },
+            {
+              "fieldLabel": "Audience"
+            },
+            {
+              "fieldLabel": "Tone",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Casual"
+                  },
+                  {
+                    "option": "Formal"
+                  },
+                  {
+                    "option": "Funny"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "4234f300-2b3f-47b2-8701-8daaedf13d2c",
+      "name": "On form submission",
+      "webhookId": "5f2075b3-85cd-4240-9a40-7fbf4c44538b"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca44f0e4-dc86-4dde-812a-c66c35bad68c",
+              "name": "Topic",
+              "value": "={{ $json.Topic }}",
+              "type": "string"
+            },
+            {
+              "id": "29fff9f9-6e68-4855-90be-dd6782108c7f",
+              "name": "Audience",
+              "value": "={{ $json.Audience }}",
+              "type": "string"
+            },
+            {
+              "id": "832d4c46-b74f-4a0e-88b7-b0d7883c6d99",
+              "name": "Tone",
+              "value": "={{ $json.Tone }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        0
+      ],
+      "id": "86988b96-018b-42c7-864d-dadd94dc442e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ти си маркетинг експерт, напиши кратък newsletter на тема {{ $('Edit Fields').item.json.Topic }}, за {{ $('Edit Fields').item.json.Audience }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        640,
+        0
+      ],
+      "id": "01efd9a4-8ab4-4f71-957c-49a3af08fa77",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-nano"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": "={{ $json.temp }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        208
+      ],
+      "id": "8299ae68-f89c-4c6a-97c7-b89957db2658",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "if _items[0][\"json\"][\"Tone\"] == 'Funny': \n  return {\"temp\": 0.7}\nelse: \n  return {\"temp\":0.3}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cf1989d0-f394-4820-8d69-da9ea1c073bb",
+      "name": "Code in Python1"
+    },
+    {
+      "parameters": {
+        "folderId": "1d19KIgg6xhiIap7VIJQYbad4pGGgoaMD",
+        "title": "New Doc"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "55632652-9c55-4659-beac-726ec84a2dfa",
+      "name": "Create a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "LnCGzH6ydsiqk9QY",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Basic LLM Chain').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "054da993-ef19-4a9b-bb37-86e5d06769ff",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "LnCGzH6ydsiqk9QY",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Content generator\nGenerates text based on a form which has topic, target audience and tone\nBased on tone, the temperature parameter in the LLM is set",
+        "height": 176,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "283e4970-3b7e-4b14-9648-6ed5d3ac65b7",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in Python1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Topic": "AI vs Data Science",
+          "Audience": "small business owners",
+          "Tone": "Funny",
+          "submittedAt": "2026-03-31T19:52:56.661+03:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

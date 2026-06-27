@@ -1,0 +1,130 @@
+{
+  "name": "[Ex4] [T4] Date and Time",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5df210e2-c419-42ff-9683-1739332775c8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3fac2ef9-0bf7-43e9-8eb3-ab577f35da02",
+              "name": "currentDate",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "2904d547-fa99-41f7-9f87-e63f7956e66d",
+              "name": "dateOnly",
+              "value": "={{ $now.toFormat('yyyy-mm-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "88863e97-2bc1-45da-aff2-37885ca3c8cd",
+              "name": "timeOnly",
+              "value": "={{ $now.toFormat('hh:mm:ss') }}",
+              "type": "string"
+            },
+            {
+              "id": "1c2d5e31-ef8c-44f8-a40b-3d83639ee2ea",
+              "name": "dayOfWeek",
+              "value": "={{ $now.toFormat('EEEE') }}",
+              "type": "string"
+            },
+            {
+              "id": "9c8cc195-08c4-4724-94b2-0814a82c8d99",
+              "name": "custom",
+              "value": "={{ $now.toFormat('dd MMM yyyy: HH:mm:ss') }}",
+              "type": "string"
+            },
+            {
+              "id": "be46e440-c97b-4ce9-a339-3cd32271c421",
+              "name": "tomorrow",
+              "value": "={{ $now.plus(1, days).toFormat('yyyy-mm-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "fc20dd00-1d2f-4deb-9ab9-39e0c31c4e03",
+              "name": "nextWeek",
+              "value": "={{ $now.plus(1, weeks).toFormat('yyyy-mm-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "08da2d57-1723-401e-b4fe-ff0d5bfd0f25",
+              "name": "executionId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7786829f-9124-4506-b0c5-3a7d3afb61f7",
+              "name": "setZone",
+              "value": "={{ $now.setZone('America/Buenos_Aires') }}",
+              "type": "string"
+            },
+            {
+              "id": "edb59a41-adf3-4dae-93d3-c195ff9b361e",
+              "name": "firstofMonth",
+              "value": "={{ $now.plus(10, days).startOf('month').format('yyyy-mm-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "27cb8d9c-59df-4400-bcd1-543ac6ac96ed",
+      "name": "Formatter"
+    },
+    {
+      "parameters": {
+        "content": "### Exploring different date and time formats\n* Adding days, minute, etc\n* firstofMonth\n* setZone\n* Getting execution id",
+        "height": 144,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "e1cd5ac6-ad10-453c-9912-65a826403023",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Formatter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

@@ -1,0 +1,183 @@
+{
+  "name": "0. Hello agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "availableInChat": true,
+        "agentIcon": {
+          "type": "icon",
+          "value": "sun"
+        },
+        "agentName": "Mimi",
+        "agentDescription": "AI асистент за общи въпроси, математика и факти",
+        "suggestedPrompts": {
+          "prompts": [
+            {
+              "text": "Колко е 150 * 1.2?"
+            },
+            {
+              "text": "Кажи ми за Алберт Айнщайн"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -448,
+        -80
+      ],
+      "id": "2342e8c5-0cef-4524-ae47-64c4175aa091",
+      "name": "When chat message received",
+      "webhookId": "86c52199-0360-4199-b96d-3bc9eb479d27"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Роля: Ти си прецизен и лаконичен асистент, работещ изцяло на български език.\n\nИнструкции за работа:\n\nМатематика: За всяко изчисление, независимо колко е просто, задължително използвай инструмента Calculator, за да гарантираш 100% точност.\n\nФакти и проверка: При въпроси за личности, събития или научни данни, винаги първо прави справка в Wikipedia.\n\nЦитиране: Когато използваш информация от външен източник, посочвай името му (напр. „Според Wikipedia...“ или „Източник: [Име]“).\n\nСтил: Отговаряй директно и стегнато. Избягвай излишни поздрави или обяснения на работния процес, освен ако не са необходими за яснотата на отговора.\n\nЦел: Максимална информативност с минимален брой думи. ",
+          "maxIterations": 10,
+          "returnIntermediateSteps": true,
+          "enableStreaming": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        -80
+      ],
+      "id": "11cb8ae4-0803-4fe1-9521-82b3612e8365",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 5000,
+          "reasoningEffort": "medium"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        144
+      ],
+      "id": "d0519c9c-fde2-48aa-a42f-cfd7422fd6a8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        144
+      ],
+      "id": "0a396aaa-54a6-4451-890f-2b5e00f40313",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        32,
+        144
+      ],
+      "id": "77c2e0ea-d8e2-439a-b7d0-f5c601e101eb",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        160,
+        144
+      ],
+      "id": "c46a4ccd-1abd-43ad-8ef2-8356900527a3",
+      "name": "Wikipedia"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

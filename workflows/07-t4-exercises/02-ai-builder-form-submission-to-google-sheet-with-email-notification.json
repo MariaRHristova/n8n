@@ -1,0 +1,212 @@
+{
+  "name": "[Ex2] [T4]. AI Builder. Form Submission to Google Sheet with Email Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "fieldName": "name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "fieldName": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea",
+              "fieldName": "message",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5f3d340d-7d86-4772-b0a1-d5667a9255d1",
+      "name": "Form Submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        272,
+        96
+      ],
+      "webhookId": "17adff7e-f2c7-407a-a1da-57209d4297e2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "email": "={{ $json.email }}",
+            "message": "={{ $json.message }}",
+            "submittedAt": "={{ $json.submittedAt }}",
+            "formMode": "={{ $json.formMode }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "formMode",
+              "displayName": "formMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "cb936c7e-6677-489b-b530-5aa345bc7d5b",
+      "name": "Save to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=Hello,  {{ $json.name }}",
+        "message": "=<h2> Hello, world </h2>\nA new form has been submitted with the following data:\n\n{{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "id": "634cccd0-875b-46bc-b234-7c6fc42a46e9",
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        96
+      ],
+      "webhookId": "b8dddd93-49ed-4014-bb62-d37c98041c7d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Form Submission Workflow\n\nThis workflow captures form submissions and processes them automatically:\n\n1. **Form Submission** - Collects name, email, and message from users\n2. **Save to Google Sheet** - Appends the form data to a Google Sheet for record-keeping\n3. **Send Email Notification** - Sends an email notification with the submission details\n\n**How it works:**\n- When someone submits the form, the data flows through each node sequentially\n- All submissions are logged in Google Sheets with a timestamp\n- You receive an email notification for every new submission\n\n**Setup required:**\n- Connect Google Sheets credentials\n- Connect Gmail credentials\n- Share the form URL with your audience",
+        "height": 548,
+        "width": 464,
+        "color": 4
+      },
+      "id": "c1344704-14d6-4f39-ae86-1bd03c1e9233",
+      "name": "Workflow Explanation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -112
+      ]
+    }
+  ],
+  "connections": {
+    "Form Submission": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": null
+}

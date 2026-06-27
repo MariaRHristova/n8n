@@ -1,0 +1,218 @@
+{
+  "name": "2 Ticket classifier",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "782c22de-89bd-44dc-ba52-b946d5359230",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ace1b90c-5f70-4337-987b-747345333327",
+              "name": "ticketText",
+              "value": "My laptop (Asset #1234) stopped connecting to the 'Corporate-Office' Wi-Fi this morning. It shows 'Connected, no internet' or fails to prompt for credentials. I have restarted the laptop twice. Other devices are working fine on this network.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ddf18100-4075-4278-84d3-192fb2e879cf",
+      "name": "Ticket Text"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-nano"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        208
+      ],
+      "id": "a9861feb-5f12-4843-a871-c6cfc034a1b4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $item(\"0\").$node[\"Ticket Text\"].json[\"ticketText\"] }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Billing",
+              "description": "issue related to billing, payment"
+            },
+            {
+              "category": "Technical",
+              "description": "Issues related to any technical problems"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "8dac28fe-f7e6-425c-957a-00a926be166e",
+      "name": "Classify Ticket",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "Billing issue",
+        "message": "=Получихме имейл: {{ $('Ticket Text').item.json.ticketText }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -96
+      ],
+      "id": "5cf311ed-64e8-4c68-a018-ddc806ac0fc4",
+      "name": "Send a message",
+      "webhookId": "784907af-66c4-47a3-9e02-c1a9bb008480",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "Technical Issue",
+        "message": "=Имейл {{ $('Ticket Text').item.json.ticketText }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        96
+      ],
+      "id": "730e12b1-0fc2-44a7-a725-8477941abbaa",
+      "name": "Send a message1",
+      "webhookId": "784907af-66c4-47a3-9e02-c1a9bb008480",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Classifies tickets\n\nTO-DO: check the setting use response API from OpenAI chat Model",
+        "height": 176,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "c729b1dd-f5d6-4689-b6d4-69888cdf1c16",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Ticket Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Text": {
+      "main": [
+        [
+          {
+            "node": "Classify Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify Ticket",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Ticket": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

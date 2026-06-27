@@ -1,0 +1,144 @@
+{
+  "name": "[Ex5] [T4] Calculator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "78927864-39d7-46ea-a794-9024f1814ffe",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8552e37-3252-4447-889b-8565c466bb25",
+              "name": "numberA",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "37050c45-3f53-4288-8173-df215c6f4e89",
+              "name": "numberB",
+              "value": 22,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5b5e07bc-dc8a-4c88-ba03-c6a29db946bb",
+      "name": "Input Numbers"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "908a225c-4eae-4dfb-89f6-81b5e82924d5",
+              "name": "sum",
+              "value": "={{ ($json.numberA  +  $json.numberB)}} ",
+              "type": "number"
+            },
+            {
+              "id": "1b241216-a355-4343-bd6c-e260410e8370",
+              "name": "division",
+              "value": "={{ ($json.numberA  /  $json.numberB).toFixed(2)}} ",
+              "type": "string"
+            },
+            {
+              "id": "76a13cff-f63e-4a1b-8a0e-ea50bce6de5c",
+              "name": "max",
+              "value": "={{Math.max($json.numberA, $json.numberB)}}",
+              "type": "number"
+            },
+            {
+              "id": "34a45633-2838-4d83-a051-8a09f0962ad9",
+              "name": "isABigger",
+              "value": "={{ $json.numberA > $json.numberB }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "32507045-e802-4571-9bf7-d5b18008b568",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "content": "## Basic number operations\n* Sum \n* Division\n* Comparios, etc"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "9366079a-d047-4123-8057-a88ee6728cc8",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Input Numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Numbers": {
+      "main": [
+        [
+          {
+            "node": "Calculator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {
+    "Input Numbers": [
+      {
+        "json": {
+          "numberA": 2,
+          "numberB": 22
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": null
+}

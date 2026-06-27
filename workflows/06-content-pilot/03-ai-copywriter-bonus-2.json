@@ -1,0 +1,402 @@
+{
+  "name": "CP-03-AI-Copywriter-Bonus",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        800,
+        48
+      ],
+      "id": "ac30ae69-b892-461f-9090-2ef8bfb5eefd",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "id"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        272
+      ],
+      "id": "ffe9a333-2412-4bf4-929b-814dcef10816",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1d19KIgg6xhiIap7VIJQYbad4pGGgoaMD",
+        "title": "={{ $json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        48
+      ],
+      "id": "5cf9a354-0f1e-4c91-9918-e71b92e74fd0",
+      "name": "Google Docs: Create",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6MiW1iicFihwkseI",
+          "name": "Google Docs OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json[\"Тема\"] }}",
+            "tone": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json[\"Тон\"] }}",
+            "doc_link": "=https://docs.google.com/document/d/{{ $('Google Docs: Create').item.json.id }}/edit",
+            "created_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "topic",
+              "displayName": "topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tone",
+              "displayName": "tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc_link",
+              "displayName": "doc_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1824,
+        48
+      ],
+      "id": "51e73d15-9e92-4a97-b37d-57c137a92612",
+      "name": "Google Sheets: Metadata",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const ai = JSON.parse($input.first().json.text);\n\nconst content = `Meta Title: ${ai.meta_title}\n\nMeta Description: ${ai.meta_description}\n\nIntro:\n${ai.intro}`;\n\nconst platform = `${ai.meta_platform || 'wordpress'}`;\n\nconst prompt = $input.first().json.prompt || '';\nconst titleMatch = prompt.match(/темата \"([^\"]+)\"/);\n\nreturn [\n  {\n    json: {\n      content,\n      title: `ContentPilot Draft - ${titleMatch ? titleMatch[1] : 'Draft'}`,\n      platform,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        48
+      ],
+      "id": "d689fdb2-8de1-4feb-be33-f8ff684fe3f4",
+      "name": "Code: Format Content"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Code: Format Content').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        48
+      ],
+      "id": "0ea01433-a824-4b85-a302-f2e1fe723eb3",
+      "name": "Google Docs: Update",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6MiW1iicFihwkseI",
+          "name": "Google Docs OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        48
+      ],
+      "id": "ebe32d6e-fe45-4fc2-89a0-cae09ae2b3f1",
+      "name": "Triggered by CP-BONUS-Full-Pipeline",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "CP-03-AI-Copywriter-Bonus\n\nSub-workflow that generates the article draft.\n\nSteps:\n1. Receives topic, keyword, and tone from the main pipeline.\n2. Builds the AI copywriting prompt.\n3. Sends the prompt to the OpenAI LLM chain.\n4. Parses and formats the AI response.\n5. Creates a Google Doc for the generated draft.\n6. Inserts the generated content into the Google Doc.\n7. Logs metadata such as topic, tone, document link, and creation time in Google Sheets.\n8. Returns the generated draft information back to the main pipeline.",
+        "height": 288,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -272
+      ],
+      "id": "303a395f-4667-49e8-bfdd-c190fc5e8763",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bf7f1dea-ba04-4686-a4d9-a3944992846c",
+              "name": "topic",
+              "value": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json[\"Тема\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "82d529d5-fd69-47b1-aea8-068085bb8813",
+              "name": "title",
+              "value": "={{ $('Code: Format Content').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "2c6760ad-b843-4ac8-83bd-17888b4deff8",
+              "name": "url",
+              "value": "={{ $('Google Sheets: Metadata').item.json.doc_link }}",
+              "type": "string"
+            },
+            {
+              "id": "86ba0827-f438-424d-9d0a-20b483e54ae5",
+              "name": "article_title",
+              "value": "={{ $('Code: Format Content').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "29a2c0bb-4961-4c9b-90ec-88dedfced068",
+              "name": "content",
+              "value": "={{ $('Code: Format Content').item.json.content }} ",
+              "type": "string"
+            },
+            {
+              "id": "d4a41b40-82b7-4d4c-9ed8-52167bd50491",
+              "name": "doc_link",
+              "value": "={{ $('Google Sheets: Metadata').item.json.doc_link }}",
+              "type": "string"
+            },
+            {
+              "id": "32bec46a-f50e-4dcb-808f-82a1edab3c57",
+              "name": "platform ",
+              "value": "={{ $('Google Sheets: Metadata').item.json.platform }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2048,
+        48
+      ],
+      "id": "8b06097c-e1e4-4d65-8ddd-36fb4a786b3d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c7e79e1-465d-417d-a1d5-a3db6702d3e6",
+              "name": "prompt",
+              "value": "=Ти си SEO копирайтър. Напиши за темата \"{{ $json['Тема'] }}\"  с ключова дума \"{{ $json['Ключова дума'] }}\" в тон \"{{ $json['Тон'] }}\" за платформа \"{{ $json['Платформа'] }}\".   Върни САМО валиден JSON:  {  \"meta_title\": \"заглавие до 60 символа с ключовата дума\",  \"meta_description\": \"описание до 155 символа\",  \"intro\": \"уводен параграф от 3-4 изречения\", \"meta_platform\": \"{{ $json['Платформа'] }}\" }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        48
+      ],
+      "id": "9405997a-b554-4631-9e95-397c18bb8b5a",
+      "name": "Set: Prepare Prompt"
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code: Format Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs: Create": {
+      "main": [
+        [
+          {
+            "node": "Google Docs: Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Metadata": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Format Content": {
+      "main": [
+        [
+          {
+            "node": "Google Docs: Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs: Update": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triggered by CP-BONUS-Full-Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Set: Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

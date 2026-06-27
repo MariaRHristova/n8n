@@ -1,0 +1,257 @@
+{
+  "name": "CP-01-Idea-Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "CP-01-Idea-Intake\n\nCollects a new content idea from a form, normalizes the data, and saves it in the ContentPilot Ideas Google Sheet.\n\nSteps:\n1. Form Trigger collects title, category, and keyword.\n2. Set: Normalize creates slug, category, keyword, created_at, status, and idea_id.\n3. Google Sheets: Append Row saves the normalized idea.\n4. Output becomes a structured content idea ready for planning.",
+        "height": 224,
+        "width": 528
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "93572817-89c8-402b-966b-5f31cc17f664",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "ContentPilot - Нова Идея",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Заглавие",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Категория",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "blog"
+                  },
+                  {
+                    "option": "social"
+                  },
+                  {
+                    "option": "video"
+                  },
+                  {
+                    "option": "email"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Ключова дума",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e3114f27-913b-4d10-9732-34c58a5f7ee0",
+      "name": "On form submission",
+      "webhookId": "80920ef8-43d0-4522-9666-5ebf28ea1663"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a96883bc-9714-435e-bf34-f3d46593b320",
+              "name": "=slug",
+              "value": "={{ $json['Заглавие'].toLowerCase().trim().split(' ').join('-') }}",
+              "type": "string"
+            },
+            {
+              "id": "30ed5c4c-6f23-484b-9522-1911158690e8",
+              "name": "=category",
+              "value": "={{ $json['Категория'].toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "881ab833-33f3-48ec-a41f-fc1020f60121",
+              "name": "keyword",
+              "value": "={{ $json['Ключова дума'].trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "6dfa7503-214b-4d74-b656-18b8f77a9666",
+              "name": "created_at",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "9c521fc9-6318-43ed-912b-45c298ade093",
+              "name": "status",
+              "value": "draft",
+              "type": "string"
+            },
+            {
+              "id": "ed1907b2-ce7c-4695-810f-56ffa54f69fe",
+              "name": "idea_id",
+              "value": "={{ 'CP-' + $now.toFormat('yyyyMMdd-HHmm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "764700c5-ade7-4ee8-b044-9b7acf277564",
+      "name": "Normalize"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1IIszWG3AWHYCcx831bUygFFH9f6uCWD6C0ulqtY-1HY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IIszWG3AWHYCcx831bUygFFH9f6uCWD6C0ulqtY-1HY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "slug": "={{ $json.slug }}",
+            "category": "={{ $json.category }}",
+            "keyword": "={{ $json.keyword }}",
+            "created_at": "={{ $json.created_at }}",
+            "status": "={{ $json.status }}",
+            "idea_id": "={{ $json.idea_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "slug",
+              "displayName": "slug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "idea_id",
+              "displayName": "idea_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "cdc237c3-16e6-48d4-a627-34bc59808def",
+      "name": "Append row in ContentPilot Ideas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "Append row in ContentPilot Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

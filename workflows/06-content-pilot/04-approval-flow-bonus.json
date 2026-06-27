@@ -1,0 +1,483 @@
+{
+  "name": "CP-04-Approval-Flow-Bonus",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        1376
+      ],
+      "id": "093a4556-d0e6-4ab2-95a5-6405ba1dc8be",
+      "name": "Triggered by CP-BONUS-Full-Pipeline"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to_email || 'mhristova27@gmail.com' }}",
+        "subject": "=ContentPilot Approval: {{ $json.article_title }}",
+        "message": "=<div style=\"margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;\">\n  <div style=\"max-width:640px;margin:0 auto;padding:32px 16px;\">\n    <div style=\"background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,0.08);border:1px solid #e5e7eb;\">\n      <div style=\"background:linear-gradient(135deg,#2563eb,#7c3aed);padding:28px 32px;color:#ffffff;\">\n        <div style=\"font-size:13px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.9;\">ContentPilot Approval</div>\n        <h1 style=\"margin:10px 0 0;font-size:26px;line-height:1.25;font-weight:700;\">Нова статия за преглед</h1>\n      </div>\n\n      <div style=\"padding:32px;\">\n        <p style=\"margin:0 0 18px;font-size:16px;line-height:1.6;\">Здравейте,</p>\n\n        <p style=\"margin:0 0 24px;font-size:16px;line-height:1.6;\">\n          Моля, прегледайте статията и изберете дали е готова за публикуване.\n        </p>\n\n        <div style=\"background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin:0 0 28px;\">\n          <div style=\"font-size:13px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;\">\n            Статия\n          </div>\n\n          <h2 style=\"font-size:20px;margin:0 0 14px;color:#111827;line-height:1.35;\">\n            {{ $json.article_title }}\n          </h2>\n\n          <p style=\"font-size:14px;line-height:1.6;color:#374151;white-space:pre-wrap;margin:0 0 18px;\">\n            {{ $json.content }}\n          </p>\n\n          <p style=\"margin:18px 0 0;\">\n            <a href=\"{{ $json.doc_link }}\" style=\"font-size:15px;line-height:1.5;color:#2563eb;text-decoration:none;font-weight:700;\">\n              Отвори Google Doc →\n            </a>\n          </p>\n        </div>\n\n        <div style=\"text-align:center;margin:32px 0;\">\n<a href=\"{{ $json.approval_resume_url }}{{ $json.approval_resume_url.includes('?') ? '&' : '?' }}decision=approve&article_title={{ encodeURIComponent($json.article_title) }}&doc_link={{ encodeURIComponent($json.doc_link) }}&platform={{ encodeURIComponent($json.platform || 'wordpress') }}\">\n  ✅ Одобрявам\n</a>\n\n<a href=\"{{ $json.approval_resume_url }}{{ $json.approval_resume_url.includes('?') ? '&' : '?' }}decision=reject&article_title={{ encodeURIComponent($json.article_title) }}&doc_link={{ encodeURIComponent($json.doc_link) }}&platform={{ encodeURIComponent($json.platform || 'wordpress') }}\">\n  ❌ Отхвърлям\n</a>\n        </div>\n\n        <div style=\"border-top:1px solid #e5e7eb;padding-top:18px;margin-top:28px;\">\n          <p style=\"margin:0;font-size:13px;color:#6b7280;line-height:1.5;\">\n            След клик parent workflow-ът ще продължи автоматично в n8n чрез Wait node.\n          </p>\n        </div>\n      </div>\n    </div>\n\n    <p style=\"text-align:center;margin:18px 0 0;font-size:12px;color:#9ca3af;\">\n      Автоматично съобщение от ContentPilot AI Content Factory\n    </p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -352,
+        1376
+      ],
+      "id": "d8ab6dfe-0054-4982-a773-1c47414fc510",
+      "name": "Gmail: Send Approval Buttons",
+      "webhookId": "922792e4-b3b6-4189-8225-5b800a2050a8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "31c20df0-ac8f-4eba-bed4-1671c991a95c",
+              "name": "approval_email_sent",
+              "value": "={{ true }}",
+              "type": "boolean"
+            },
+            {
+              "id": "086d713b-e55c-4a54-8d2a-0fc9985824d1",
+              "name": "article_title",
+              "value": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json.article_title }}",
+              "type": "string"
+            },
+            {
+              "id": "84c8c70e-66ab-4eda-a235-5cc7dace09a6",
+              "name": "content",
+              "value": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "47d1d7cb-828c-45d6-9d67-48a29f030ad5",
+              "name": "doc_link",
+              "value": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json.doc_link }}",
+              "type": "string"
+            },
+            {
+              "id": "f072c585-6b82-4168-ba95-a2023b28d514",
+              "name": "platform",
+              "value": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json.platform || 'wordpress' }}",
+              "type": "string"
+            },
+            {
+              "id": "78e149d1-fd4e-4b07-8bc6-37864d8368e8",
+              "name": "approval_resume_url",
+              "value": "={{ $('Triggered by CP-BONUS-Full-Pipeline').item.json.approval_resume_url }}",
+              "type": "string"
+            },
+            {
+              "id": "78b15b8f-e9f4-4a8b-b94e-d739a682ae39",
+              "name": "status",
+              "value": "approval_email_sent",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        1376
+      ],
+      "id": "34203b6d-243c-46ad-acde-7558a6368619",
+      "name": "Set: Return Email Sent"
+    },
+    {
+      "parameters": {
+        "content": "CP-04-Approval-Flow-Bonus\n\nSub-workflow that handles human approval before publishing.\n\nSteps:\n1. Receives article title, content, document link, platform, and approval resume URL.\n2. Prepares the approval data.\n3. Sends an email with Approve and Reject buttons.\n4. Waits for the user to click one of the approval buttons.\n5. Reads the approval decision from the button click.\n6. Normalizes the result as approved or rejected.\n7. Sends a confirmation email depending on the decision.\n8. Returns the approval status back to the main pipeline.",
+        "height": 240,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        1088
+      ],
+      "id": "7b226cf5-7e4d-4fa9-8c23-8e0f660f199c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {
+          "ignoreBots": true
+        }
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        1376
+      ],
+      "id": "d2fe1347-7323-4e8f-962a-16649e17c2a7",
+      "name": "Wait: Approval Button Clicked",
+      "webhookId": "contentpilot-bonus-approval-wait"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0e31dbe7-548e-4c3f-90fb-2df8d061bde3",
+              "name": "decision",
+              "value": "={{ ($json.query && $json.query.decision) || $json.decision || 'reject' }}",
+              "type": "string"
+            },
+            {
+              "id": "2c88db49-dd20-4b23-a9f2-608a7f69e1f5",
+              "name": "approval_status",
+              "value": "={{ ((($json.query && $json.query.decision) || $json.decision) === 'approve') ? 'approved' : 'rejected' }}",
+              "type": "string"
+            },
+            {
+              "id": "2f50fa92-c056-4f15-b04c-bf743e0ee16b",
+              "name": "approved",
+              "value": "={{ ((($json.query && $json.query.decision) || $json.decision) === 'approve') }}",
+              "type": "boolean"
+            },
+            {
+              "id": "cb7d8642-f5b3-426b-a181-f841f366ff62",
+              "name": "article_title",
+              "value": "={{ $('Set: Prepare Approval Data').item.json.article_title }}",
+              "type": "string"
+            },
+            {
+              "id": "eb8362af-266d-4f23-8680-542ee1eeb3dd",
+              "name": "content",
+              "value": "={{ $('Set: Prepare Approval Data').item.json.content || ('Approved Google Doc: ' + $('Set: Prepare Approval Data').item.json.doc_link) }}",
+              "type": "string"
+            },
+            {
+              "id": "3ff74443-7d33-4efa-81fa-cd027939ff5e",
+              "name": "doc_link",
+              "value": "={{ $('Set: Prepare Approval Data').item.json.doc_link }}",
+              "type": "string"
+            },
+            {
+              "id": "07ec0da3-9721-4484-9d8f-750f78b266bb",
+              "name": "platform",
+              "value": "={{ $('Set: Prepare Approval Data').item.json.platform || 'wordpress' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        1376
+      ],
+      "id": "712fd901-3dd8-461b-9b4d-a99c126ccf69",
+      "name": "Set: Normalize Approval Result"
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=ОДОБРЕНО: {{ $json['article_title'] }}",
+        "message": "=Статията {{ $json['article_title'] }} за платформа  {{ $json['platform'] }}   е одобрена за публикуване!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        1280
+      ],
+      "id": "27df2ed0-0c87-4634-be5d-a0d09bd8eaa7",
+      "name": "Send approval message",
+      "webhookId": "10c388a9-e517-4ab4-acbe-91f2049a7c63",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=ОТХВЪРЛЕНО: {{ $json.article_title }}",
+        "message": "=Статията {{ $json.article_title }} е отхвърлена. Бележка: {{ $json.note || 'Няма бележка' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        1472
+      ],
+      "id": "c0fd8286-18d5-4fc6-8bf9-b79b4c3c105a",
+      "name": "Send rejection message",
+      "webhookId": "681fe5eb-7fcf-48cc-86c4-a4f5b2b10529",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6272ea73-8378-463b-bdee-fa545fe47977",
+              "leftValue": "={{ $json[\"approval_status\"] }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        544,
+        1376
+      ],
+      "id": "3116bbbe-3b3d-4551-a164-1898b16666d6",
+      "name": "Is approved?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "770a014a-cf56-41c4-9435-cc56eda09282",
+              "name": "approval_status",
+              "value": "={{ $('Set: Normalize Approval Result').item.json.approval_status}} ",
+              "type": "string"
+            },
+            {
+              "id": "65f707ce-589a-431b-954f-b443a0b86230",
+              "name": "=article_title",
+              "value": "={{ $('Set: Normalize Approval Result').item.json.article_title }}",
+              "type": "string"
+            },
+            {
+              "id": "f293a204-ee2c-4be8-8e5a-50dcabc01fa4",
+              "name": "content",
+              "value": "={{ $('Set: Normalize Approval Result').item.json.content }} ",
+              "type": "string"
+            },
+            {
+              "id": "2a05470a-dcaf-48da-95b8-a0939f9abcda",
+              "name": "doc_link",
+              "value": "={{ $('Set: Normalize Approval Result').item.json.doc_link }}",
+              "type": "string"
+            },
+            {
+              "id": "0c89aebe-3291-4dd4-8016-fbe42fa72913",
+              "name": "platform",
+              "value": "={{ $('Set: Normalize Approval Result').item.json.platform }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        1376
+      ],
+      "id": "24457f04-01c9-4b3c-838c-e74d1083fc12",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6477144c-2254-4cb6-905b-e7b798d8cedf",
+              "name": "article_title",
+              "value": "={{ $json.article_title || $json.title || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "154def29-d2d6-452f-b674-0952b58c8349",
+              "name": "content",
+              "value": "={{ $json.content || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "d199fc7d-3483-495e-8279-50d68edb647e",
+              "name": "doc_link",
+              "value": "={{ $json.doc_link || $json.url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "5cda2bd5-b398-4203-a822-660f786cea24",
+              "name": "platform",
+              "value": "={{ $json.platform  }}",
+              "type": "string"
+            },
+            {
+              "id": "bc247739-f275-4be8-98d1-a6b5d1129eba",
+              "name": "=approval_resume_url",
+              "value": "={{ $execution.resumeUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        1376
+      ],
+      "id": "483c3c16-a30a-4790-81aa-eef139388490",
+      "name": "Set: Prepare Approval Data"
+    }
+  ],
+  "connections": {
+    "Triggered by CP-BONUS-Full-Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Set: Prepare Approval Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail: Send Approval Buttons": {
+      "main": [
+        [
+          {
+            "node": "Set: Return Email Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait: Approval Button Clicked": {
+      "main": [
+        [
+          {
+            "node": "Set: Normalize Approval Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Return Email Sent": {
+      "main": [
+        [
+          {
+            "node": "Wait: Approval Button Clicked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send approval message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send rejection message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is approved?": {
+      "main": [
+        [
+          {
+            "node": "Send approval message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send rejection message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Normalize Approval Result": {
+      "main": [
+        [
+          {
+            "node": "Is approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Prepare Approval Data": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Send Approval Buttons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

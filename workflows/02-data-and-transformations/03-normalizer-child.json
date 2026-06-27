@@ -1,0 +1,86 @@
+{
+  "name": "03 Normalizer-Child",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "fullName"
+            },
+            {
+              "name": "email"
+            },
+            {
+              "name": "phone"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8bde4820-3e8f-40e5-8ead-50d844afd4f1",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64c2f433-0adc-44ef-8906-9dc8f291e809",
+              "name": "fullName",
+              "value": "={{ $json.fullName.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "c2ca9fa5-7860-4a56-bd71-bd5c3d1bdc06",
+              "name": "email",
+              "value": "={{ $json.email.toLowerCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "6403619a-4374-4bf8-b823-a42f14c21644",
+              "name": "phone",
+              "value": "={{ $json.phone.replace(/[^0-9+]/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d24e1e31-4ca9-46ae-b04a-b60d473ae788",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

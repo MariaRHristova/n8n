@@ -1,0 +1,149 @@
+{
+  "name": "01 Weather API Dashboard",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3d75e134-d189-4986-b46e-acb95b7f2826",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "473bd89e-a7a0-4ba7-98c8-7acae20e918a",
+              "name": "latitude",
+              "value": 42.6977,
+              "type": "number"
+            },
+            {
+              "id": "51d73724-6399-4850-a6e1-92474cdab5b3",
+              "name": "longtitude",
+              "value": 23.3219,
+              "type": "number"
+            },
+            {
+              "id": "5210624b-80a8-4039-ad29-0b1d8e7bb69b",
+              "name": "city_name",
+              "value": "София",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f0b34b13-0046-4389-aa55-d28eb8a57a11",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.open-meteo.com/v1/forecast?latitude={{ $json.latitude }}&longitude={{ $json.longtitude }}&current=temperature_2m,weather_code,wind_speed_10m",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "29a5f361-6f96-4ede-9099-8680bba01e29",
+      "name": "Get weater from Open Meteo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00332c9e-6b17-48ce-ae9d-620b808687f1",
+              "name": "=city_name",
+              "value": "={{ $('Edit Fields').item.json.city_name }}",
+              "type": "string"
+            },
+            {
+              "id": "57cf930a-7de6-43af-ab0c-c266af284998",
+              "name": "temperature",
+              "value": "={{ $json.current_units.temperature_2m }} °C",
+              "type": "string"
+            },
+            {
+              "id": "ac7433fd-be69-44d8-b57f-326e7fa94667",
+              "name": "wind_speed",
+              "value": "={{ $json.current.wind_speed_10m }} km/h",
+              "type": "string"
+            },
+            {
+              "id": "ab9dffd8-1d13-449a-982f-0e0514846914",
+              "name": "weather_code",
+              "value": "={{ $json.current.weather_code }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "abce83f0-e55d-4781-a145-63a87acd8663",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get weater from Open Meteo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get weater from Open Meteo": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

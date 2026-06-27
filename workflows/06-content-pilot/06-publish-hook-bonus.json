@@ -1,0 +1,248 @@
+{
+  "name": "CP-06-Publish-Hook-Bonus",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba01dd3e-c6ca-47e9-a4da-2da23570db72",
+              "name": "title",
+              "value": "={{$json.article_title}}",
+              "type": "string"
+            },
+            {
+              "id": "b337ebb4-9232-4471-9acd-42efb2f13135",
+              "name": "content",
+              "value": "={{$json.content}}",
+              "type": "string"
+            },
+            {
+              "id": "eaa6a093-d79c-4ead-9279-da8687bb53da",
+              "name": "platform",
+              "value": "={{$json.platform}}",
+              "type": "string"
+            },
+            {
+              "id": "957e0167-07a4-4917-a140-2ab8024e9609",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "080f356d-981b-4222-8d82-c32ec2dc0b2a",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        144
+      ],
+      "id": "a39850e5-e6b2-419a-a1d1-49ca2c6a29c6",
+      "name": "Set: Prepare"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.platform }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $json.timestamp }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -368,
+        144
+      ],
+      "id": "01e5cce0-dea3-4f83-9b5c-501f2cbe42c2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "CP-06-Publish-Hook-Bonus\n\nSub-workflow that sends approved content to a publishing hook and logs the result.\n\nSteps:\n1. Receives approved article data from the main pipeline.\n2. Prepares the title, content, platform, and timestamp.\n3. Sends the prepared data to the external publishing API endpoint.\n4. Receives the API response.\n5. Logs the publish result in Google Sheets.\n6. Stores timestamp, platform, status, and response URL for tracking.",
+        "height": 252,
+        "width": 544,
+        "color": 4
+      },
+      "id": "0a39b060-b8de-4591-ae80-cfed167ef613",
+      "name": "Описание",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xVspASEV0zbDdG-ZivD_mp2uhlU7z2dFzUWjNOJm0gg",
+          "mode": "list",
+          "cachedResultName": "ContentPilot Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xVspASEV0zbDdG-ZivD_mp2uhlU7z2dFzUWjNOJm0gg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xVspASEV0zbDdG-ZivD_mp2uhlU7z2dFzUWjNOJm0gg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+            "platform": "={{ $json.json.platform }}",
+            "status": "={{ $json.url ? 'success' : 'error' }}",
+            "response_url": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "response_url",
+              "displayName": "response_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        144
+      ],
+      "id": "dc9d2905-d09f-44e8-9509-824a6f5b5078",
+      "name": "Google Sheets: Log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -848,
+        144
+      ],
+      "id": "b70cad85-08ee-4ae5-b91c-74ad4fd492b7",
+      "name": "Triggered by CP-BONUS-Full-Pipeline",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Set: Prepare": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triggered by CP-BONUS-Full-Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Set: Prepare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

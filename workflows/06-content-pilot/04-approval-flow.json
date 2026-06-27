@@ -1,0 +1,230 @@
+{
+  "name": "CP-04-Approval-Flow",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "CP-04-Approval-Flow\n\nHandles article approval or rejection and sends the correct email and Telegram notification.\n\nSteps:\n1. Form Trigger collects article title, approval decision, note, and Google Doc link.\n2. IF node checks whether the article is approved.\n3. True branch sends an approval email.\n4. False branch sends a rejection email with the note.\n5. Telegram sends the final approval status.",
+        "height": 320,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "ed57de0d-e170-4127-b6c6-2e9c0e8458bc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "Одобрение по имейл",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Заглавие на статия",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Одобрена?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "да"
+                  },
+                  {
+                    "option": "не"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Бележка"
+            },
+            {
+              "fieldLabel": "Google Doc линк"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -224,
+        176
+      ],
+      "id": "c014156f-dfaf-4890-83b3-8f9be6f62ed6",
+      "name": "Form Triger",
+      "webhookId": "0aff5534-5e36-42c8-b95d-1c2aa8017ae9"
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=ОДОБРЕНО: {{ $json['Заглавие на статия'] }}",
+        "message": "=Статията '{{ $json['Заглавие на статия'] }}' е одобрена за публикуване!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        80
+      ],
+      "id": "8ac14ba7-fb9f-4d76-aefa-f0a4751bb4b2",
+      "name": "Send approval message",
+      "webhookId": "10c388a9-e517-4ab4-acbe-91f2049a7c63",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=ОТХВЪРЛЕНО:  {{ $json[\"Заглавие на статия\"] }}",
+        "message": "=\"Статията е отхвърлена. Бележка: {{ $json['Бележка'] || 'Няма бележка' }}\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        272
+      ],
+      "id": "542e0ebb-340d-402b-8ca5-319dcfd6806a",
+      "name": "Send rejection message",
+      "webhookId": "681fe5eb-7fcf-48cc-86c4-a4f5b2b10529",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8767865172",
+        "text": "=\"ContentPilot: - {{ $('Form Triger').item.json[\"Заглавие на статия\"] }}\"  + {{ $('Form Triger').item.json[\"Одобрена?\"] === 'да' ? 'ОДОБРЕНО': 'ОТХВЪРЛЕНО'}}\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        176
+      ],
+      "id": "de2ef659-2c2f-48d4-bc7e-05070e2360a4",
+      "name": "Send a text message",
+      "webhookId": "037bc382-e2de-4a83-afb5-3c536727335d",
+      "credentials": {
+        "telegramApi": {
+          "id": "0UGja7NV2qDoAzoR",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6272ea73-8378-463b-bdee-fa545fe47977",
+              "leftValue": "={{ $json[\"Одобрена?\"] }}",
+              "rightValue": "да",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        176
+      ],
+      "id": "7aba7a16-b3c4-4e02-ac02-d24634446bb1",
+      "name": "Is approved?"
+    }
+  ],
+  "connections": {
+    "Form Triger": {
+      "main": [
+        [
+          {
+            "node": "Is approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send rejection message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send approval message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is approved?": {
+      "main": [
+        [
+          {
+            "node": "Send approval message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send rejection message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

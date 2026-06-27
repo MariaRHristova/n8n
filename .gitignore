@@ -1,9 +1,6 @@
 ﻿# Keep the repository focused on the exported workflows only.
 # Track the workflow JSON files under /workflows and ignore the supporting docs.
-*
-!/.gitignore
-!/workflows/
-!/workflows/**/*.json
+
 
 # Optional supporting files are intentionally excluded from GitHub.
 /docs/

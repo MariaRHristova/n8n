@@ -1,0 +1,168 @@
+{
+  "name": "[Ex6] [T4] JSON Transform",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c365a2cb-6ad2-42a0-bea8-bade9c41e707",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6a73cf59-c52e-407d-8f40-18b458465c8c",
+              "name": "firstName",
+              "value": "Иван",
+              "type": "string"
+            },
+            {
+              "id": "dfeb5e39-423d-4006-a7b8-11e376905968",
+              "name": "lastName",
+              "value": "Петров",
+              "type": "string"
+            },
+            {
+              "id": "7f8a94f8-d2a9-4064-884f-0b0cbc62e340",
+              "name": "age",
+              "value": 28,
+              "type": "number"
+            },
+            {
+              "id": "9c18fc60-420d-410e-b5f3-447c5dee5d6e",
+              "name": "city",
+              "value": "София",
+              "type": "string"
+            },
+            {
+              "id": "4c60bde1-3c6b-4952-93e1-ffc2f3cf34d3",
+              "name": "email",
+              "value": "ivan@example.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "7143bf89-e27f-40c3-911a-59a8b6ce8f80",
+      "name": "Personal Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "853e3e5d-2b0a-442f-a498-8d2e703b5a8a",
+              "name": "fullName",
+              "value": "={{ $json.firstName + \" \" + $json.lastName }}",
+              "type": "string"
+            },
+            {
+              "id": "829f6420-5091-4751-ad72-078e6fd63e4f",
+              "name": "greeting",
+              "value": "={{ Hello, \"\" + $json.firstName + \"!\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b011b07c-547f-4e0a-87f7-d5e41be6114e",
+              "name": "isAdult",
+              "value": "={{ $json.age > 18 }}",
+              "type": "boolean"
+            },
+            {
+              "id": "350ed52e-75c2-493a-97f5-69b17f70c95b",
+              "name": "birthYear",
+              "value": "={{ $now.format('yyyy') - $json.age }}",
+              "type": "number"
+            },
+            {
+              "id": "de949bdb-e633-4eeb-89ef-840b19c56c7b",
+              "name": "initials",
+              "value": "={{ $json.firstName[0] + $json.lastName[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "0f5bdbc8-e965-45e5-a40a-1e7d9f30c4c2",
+              "name": "emailDomain",
+              "value": "={{ $json.email.split(\"@\")[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "e1dcba39-6512-401e-b2e8-4f4081aabf3c",
+              "name": "emailClean",
+              "value": "={{ $json.email.toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "ae57fbc5-5457-426c-9c73-77eab777fdb1",
+      "name": "Transform"
+    },
+    {
+      "parameters": {
+        "content": "## Exercise 6\nPerson Data -> Transformed fields\nString concatenation, .split(), boolean expressions, and math\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -336,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "1de0e80e-d721-4947-a704-94ca7ced1916",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Personal Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Data": {
+      "main": [
+        [
+          {
+            "node": "Transform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

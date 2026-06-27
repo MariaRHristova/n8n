@@ -1,0 +1,539 @@
+{
+  "name": "[Ex9] [Bonus 2] [T4] If Node - Smart Router",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ecd18617-7ee4-4a1a-aac2-050e0084322a",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "85050a86-f20e-4c8b-a5c8-3da52d1ec415",
+              "name": "budget",
+              "value": "={{ $json.budget }}",
+              "type": "string"
+            },
+            {
+              "id": "6c13c1e8-d62a-45c5-88ca-129059d26aac",
+              "name": "status",
+              "value": "=VIP client",
+              "type": "string"
+            },
+            {
+              "id": "e5f639d6-2560-4bde-9242-4c12ab45e951",
+              "name": "discount",
+              "value": "=20",
+              "type": "number"
+            },
+            {
+              "id": "a365c546-ad6e-4a66-b925-e6783b13604f",
+              "name": "welcomeMessage",
+              "value": "=Hello, {{ $json.name }}. As a VIP client, you get a 20% discount. ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        288
+      ],
+      "id": "efbee685-8413-4ef1-908b-7fbd245902f7",
+      "name": "VIP Client"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3286e154-aa6f-4b7b-bf1d-84b253488162",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "d375deac-0a49-4830-99b9-56790a3f71b5",
+              "name": "budget",
+              "value": "={{ $json.budget }}",
+              "type": "string"
+            },
+            {
+              "id": "0a47cc72-551e-4469-9b95-ec477c7395a1",
+              "name": "status",
+              "value": "Standard Client",
+              "type": "string"
+            },
+            {
+              "id": "615b5817-ec9d-424f-b32d-13c247cefa52",
+              "name": "discount",
+              "value": "5",
+              "type": "string"
+            },
+            {
+              "id": "f7d9ce02-d8a7-4923-9fc6-3ae75abaa74f",
+              "name": "=welcomeMessage",
+              "value": "=Hello,  {{ $json.name }}. You receive our standard 5% discount.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        480
+      ],
+      "id": "c748b70a-cdc1-4070-b708-8f929f11e3c4",
+      "name": "Standard Client"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ee2074d-dbb7-455b-9939-1966620a722e",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f4312310-45ce-4b50-b8e3-4e433ae047af",
+              "name": "budget",
+              "value": "={{ $json.budget }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        208
+      ],
+      "id": "8d9ad3f4-67ea-42e1-b3c0-21a63f2d50f2",
+      "name": "Name and Budget"
+    },
+    {
+      "parameters": {
+        "content": "## Bonus 2\n** Routes clients based on budget \n> 1000 VIP client\n<= 1000 Standard Client\n-1.44 minutes"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -96
+      ],
+      "id": "ce8d19f4-9ffa-45f2-adec-a2eaca379129",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "14bc8960-3141-4397-a7c0-13ea51239621",
+              "leftValue": "={{ $json.budget }}",
+              "rightValue": 1000,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        384
+      ],
+      "id": "b1f91581-e844-4582-9492-13c4966f4f88",
+      "name": "If budget above 1000"
+    },
+    {
+      "parameters": {
+        "formTitle": "What is your budger",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "fieldName": "name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Budget",
+              "fieldName": "budget",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "respondWith": "redirect",
+              "redirectUrl": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit?gid=1281058467#gid=1281058467"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -48,
+        384
+      ],
+      "id": "524e71fb-9faf-4b89-8b21-5c14e357bdfc",
+      "name": "On form submission",
+      "webhookId": "c950202b-3d50-4cfa-bd7d-26ed60fbc2c3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit?gid=1281058467#gid=1281058467",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1281058467,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit#gid=1281058467"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "status"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "discount",
+              "displayName": "discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "welcomeMessage",
+              "displayName": "welcomeMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        288
+      ],
+      "id": "9317c8f3-78cf-4126-8bb6-e1492f612db5",
+      "name": "Append VIP client",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit?gid=1281058467#gid=1281058467",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1281058467,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ukd3OQrytmj0-P0ZGEboRXbqwMe8ik6SVKCHaPMceCA/edit#gid=1281058467"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "name"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "discount",
+              "displayName": "discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "welcomeMessage",
+              "displayName": "welcomeMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        480
+      ],
+      "id": "cd8b964f-5eea-4426-be4f-7145d4bd4c08",
+      "name": "Append Standard client",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "Discount",
+        "message": "=<h1>Thank you</h1>\n<p>{{ $json.welcomeMessage }}</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        480
+      ],
+      "id": "3f8f032f-e24b-44c5-a488-4dffc2b99a2a",
+      "name": "Send email to standard client",
+      "webhookId": "bdce150e-4016-44df-bdb4-ecd6e14cec3b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "Discount",
+        "message": "=<h1>Thank you</h1>\n<p>{{ $json.welcomeMessage }}</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        288
+      ],
+      "id": "cf92a5f8-213f-4672-8ba3-c8696f795e35",
+      "name": "Send email to VIP client",
+      "webhookId": "bdce150e-4016-44df-bdb4-ecd6e14cec3b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Name and Budget": {
+      "main": [
+        []
+      ]
+    },
+    "If budget above 1000": {
+      "main": [
+        [
+          {
+            "node": "VIP Client",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Standard Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If budget above 1000",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VIP Client": {
+      "main": [
+        [
+          {
+            "node": "Append VIP client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard Client": {
+      "main": [
+        [
+          {
+            "node": "Append Standard client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append VIP client": {
+      "main": [
+        [
+          {
+            "node": "Send email to VIP client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Standard client": {
+      "main": [
+        [
+          {
+            "node": "Send email to standard client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

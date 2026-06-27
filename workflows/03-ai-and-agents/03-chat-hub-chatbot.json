@@ -1,0 +1,28 @@
+{
+  "name": "3. Chat Hub Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -64,
+        16
+      ],
+      "id": "018b4ca5-9cf4-4851-942b-c9342187c359",
+      "name": "When chat message received",
+      "webhookId": "267e1197-89ed-4342-a58d-b42d69fce0c3"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

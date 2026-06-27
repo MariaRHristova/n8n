@@ -1,0 +1,226 @@
+{
+  "name": "CP-05-ContentBot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -224,
+        176
+      ],
+      "id": "38698515-c53c-40c6-a7a4-3613ad82dfc0",
+      "name": "Chat trigger",
+      "webhookId": "2c8dee10-7704-4daa-9d54-cfeb98d2c08e"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-nano"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        400
+      ],
+      "id": "17f0cffb-82f4-4800-aa60-7c8f2e671869",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        256,
+        400
+      ],
+      "id": "9ccb909b-6620-49b3-9287-f8c50fc25653",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        400
+      ],
+      "id": "e11f5351-cfa8-4e79-8612-08da658d9608",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Проверява времето в даден град",
+        "url": "=https://wttr.in/{{ $fromAI(\"city\", \"Градът за проверка\") }}?format=3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        384,
+        400
+      ],
+      "id": "9f9cabc5-f5ad-4b1b-ae8b-e0311a5f6002",
+      "name": "Weather Check HTTP"
+    },
+    {
+      "parameters": {
+        "content": "CP-05-ContentBot\n\nCreates a chat-based AI assistant for content marketing, SEO help, research, and weather checks.\n\nSteps:\n1. Chat Trigger starts the conversation.\n2. AI Agent answers as ContentBot in Bulgarian.\n3. OpenAI Chat Model powers the agent.\n4. Wikipedia Tool provides factual research.\n5. HTTP Request Tool checks weather through wttr.in.\n6. Google Sheets Tool reads ContentPilot data.\n7. Simple Memory keeps short conversation context.",
+        "height": 248,
+        "width": 736,
+        "color": 4
+      },
+      "id": "67c93fde-170e-45f8-ae71-d2ea460ded35",
+      "name": "Workflow Description",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Ти си ContentBot - асистент за content маркетинг.\n\nПомагаш с идеи за статии, SEO оптимизация и research на теми.\n\nОтговаряй на български.\n\nПолзвай Wikipedia за факти, HTTP за времето и Google Sheets за данни от ContentPilot системата."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        184,
+        176
+      ],
+      "id": "4777c337-45ac-44d4-bebc-515652dcaf76",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Чете данни от ContentPilot Google Sheets - идеи и чернови",
+        "documentId": {
+          "__rl": true,
+          "value": "1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0",
+          "mode": "list",
+          "cachedResultName": "ContentPilot Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        400
+      ],
+      "id": "11e9c56b-d7a6-4bab-954a-367b6c0cba15",
+      "name": "Read Google Sheets: ContentPilot",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Chat trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weather Check HTTP": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Sheets: ContentPilot": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

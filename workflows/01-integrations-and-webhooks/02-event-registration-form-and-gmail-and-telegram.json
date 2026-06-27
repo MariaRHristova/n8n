@@ -1,0 +1,248 @@
+{
+  "name": "02 - Event Registration form and Gmail and Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Event Registration",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company"
+            },
+            {
+              "fieldLabel": "Topic",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "n8n basics"
+                  },
+                  {
+                    "option": "AI Workflow"
+                  },
+                  {
+                    "option": "Advanced Automations"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "551b0efe-af6b-42ff-8be8-e14714ae4ec3",
+      "name": "On form submission",
+      "webhookId": "97ea3556-9a34-4fdb-838b-58f59055bbb2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1LiDQFph7mWh649Qs4dZ3SPSu143Xm9KUIDHgUl1ZkEM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiDQFph7mWh649Qs4dZ3SPSu143Xm9KUIDHgUl1ZkEM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.Name }}",
+            "email": "={{ $json.Email }}",
+            "company": "={{ $json.Company || 'N/A'}}",
+            "topic": "={{ $json.Topic }}",
+            "timestamp": "={{ $now.toFormat('dd.MM.yyyy')}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "topic",
+              "displayName": "topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        112,
+        0
+      ],
+      "id": "ee68c7b7-aa3c-46dd-8f63-657a5add92ad",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=New registration N8N test {{ $json.topic }}",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f7f9; }\n        .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e1e4e8; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }\n        .header { background: #ff2a2e; color: #ffffff; padding: 30px; text-align: center; }\n        .content { padding: 30px; }\n        .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #f9f9f9; border-radius: 5px; }\n        .details-table td { padding: 12px; border-bottom: 1px solid #eee; }\n        .label { font-weight: bold; color: #555; width: 30%; }\n        .footer { padding: 20px; text-align: center; font-size: 0.85em; color: #777; background: #f4f7f9; }\n        .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h2 style=\"margin:0;\">Registration Confirmed!</h2>\n        </div>\n        <div class=\"content\">\n            <p>Hi <strong>{{ $json['name'] }}</strong>,</p>\n            <p>You're all set! We’ve successfully reserved your spot for the upcoming session. Here are your registration details:</p>\n            \n            <div style=\"text-align: center; margin-bottom: 20px;\">\n                <span class=\"badge\">{{ $json['topic'] }}</span>\n            </div>\n\n            <table class=\"details-table\">\n                <tr>\n                    <td class=\"label\">Attendee</td>\n                    <td>{{ $json['name'] }}</td>\n                </tr>\n                <tr>\n                    <td class=\"label\">Email</td>\n                    <td>{{ $json['email'] }}</td>\n                </tr>\n                <tr>\n                    <td class=\"label\">Company</td>\n                    <td>{{ $json['company'] || 'N/A' }}</td>\n                </tr>\n                <tr>\n                    <td class=\"label\">Confirmed On</td>\n                    <td>{{ $now.toFormat('dd.MM.yyyy HH:mm') }}</td>\n                </tr>\n            </table>\n\n            <p>We're looking forward to seeing you there!</p>\n            <p>Best regards,<br>\n            <strong>The SoftUni n8n Team</strong></p>\n        </div>\n        <div class=\"footer\">\n            Sent via n8n automation • SoftUni Technical Team\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        0
+      ],
+      "id": "b90bafba-9991-4865-9ae6-d4f82b630158",
+      "name": "Send a message",
+      "webhookId": "ab5282b2-1085-4c1c-94a5-f5cc95b6e283",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8767865172",
+        "text": "=*New Event Registration* *Name:* {{ $('Append row in sheet').item.json.name }} \n*Email:* {{ $('Append row in sheet').item.json.email }}*Company:* {{ $('Append row in sheet').item.json.company }}\n\n 'N/A' }}\n*Topic:\n* {{ $('Append row in sheet').item.json.topic }} *Time:* {{ $now.toFormat('dd.MM.yyyy HH:mm') }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "aac7df52-28bb-44e7-8205-87b5f8de4191",
+      "name": "Send a text message",
+      "webhookId": "c2a80a54-af9a-4096-bec3-ef5f145f4469",
+      "credentials": {
+        "telegramApi": {
+          "id": "0UGja7NV2qDoAzoR",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

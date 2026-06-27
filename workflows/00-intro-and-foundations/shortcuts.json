@@ -1,0 +1,41 @@
+{
+  "name": "Shortcuts",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Shortcuts\nShift + S = Sticky Node\nD = Disable/Enable node\nClick on node and Space= Rename node\nN = Add node\nCtrl + Alt + T = Tidy\n",
+        "height": 144,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        -112
+      ],
+      "id": "2058b273-a151-4dfd-a412-d81750a3a69d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9797f3db-f032-4db8-8b6b-fd4b8d831f31",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

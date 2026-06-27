@@ -1,0 +1,116 @@
+{
+  "name": "CP-07A-Test-Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "CP-07A-Test-Workflow\n\nTests success and failure handling by sending a GET request to a user-provided URL.\n\nSteps:\n1. Form Trigger collects the test URL.\n2. HTTP Request sends a GET request to the entered URL.\n3. Set: Success runs only if the request succeeds.\n4. If the request fails, the workflow error is sent to CP-07B-Error-Handler.",
+        "height": 212,
+        "width": 520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "64c6fdc8-7da4-4702-839d-dcdde01480d7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "CP-07A-Test-Workflow",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL за тест",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "260d2bb4-557b-41f6-8e61-78a4e4e49b4b",
+      "name": "Form Trigger",
+      "webhookId": "04e41c02-ba6a-4b14-902d-e2654bdca822"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['URL за тест'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "909c63bf-cdec-4181-a716-e2f828ac512d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "26592373-f6fb-4b44-a9ff-cdaabb640420",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4b8fbe3f-e626-4aa7-8d3c-9745c95ea6df",
+      "name": "Set status"
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Set status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "gVdI8rt5A9uEspJD",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": null
+}

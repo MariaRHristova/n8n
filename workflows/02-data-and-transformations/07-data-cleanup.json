@@ -1,0 +1,109 @@
+{
+  "name": "07 Data cleanup",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ab11d5c9-427f-40f6-97ec-36ff125e12f2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddca96ca-8a2a-443f-add4-ac633703d292",
+              "name": "fullName",
+              "value": "Mariya hristova",
+              "type": "string"
+            },
+            {
+              "id": "a2bc0e37-d8da-4d17-9790-2107e4b3ec58",
+              "name": "email",
+              "value": "MHRISTOVA27@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "97a1bf85-74aa-4b6c-a545-9f6bd2e7d2cf",
+              "name": "phone",
+              "value": "+0884648410",
+              "type": "string"
+            },
+            {
+              "id": "fe91541d-619d-49e6-99d3-769bf998d1c8",
+              "name": "company",
+              "value": "test",
+              "type": "string"
+            },
+            {
+              "id": "9cc3170f-3b97-4d72-b89b-37ae7d029376",
+              "name": "registrationDate",
+              "value": "2026-03-10",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0d40592d-5f82-4080-a5c5-30b8379cfd73",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get all incoming items\nconst items = $input.all(); \n\n// 2. Process each item\nconst processed = items.map(item => { \n  const data = item.json; \n\n  // Clean and Capitalize Full Name (e.g., \"ivan ivanov\" -> \"Ivan Ivanov\")\n  const rawName = (data.fullName || '').trim(); \n  const cleanName = rawName\n    .toLowerCase()\n    .split(' ')\n    .filter(word => word.length > 0)\n    .map(word => word.charAt(0).toUpperCase() + word.slice(1))\n    .join(' ');\n\n  // Clean Email (trim + lowercase)\n  const cleanEmail = (data.email || '').trim().toLowerCase();\n\n  // IMPORTANT: Return in the n8n \"json\" wrapper format\n  return {\n    json: {\n      ...data,           // Keeps original fields (company, topic, etc.)\n      fullName: cleanName,\n      email: cleanEmail\n    }\n  };\n});\n\nreturn processed;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "bb65d389-5297-4d41-adab-a3bc88bf43b1",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

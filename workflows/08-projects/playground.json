@@ -1,0 +1,588 @@
+{
+  "name": "Playground",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -80
+      ],
+      "id": "e735d9a1-d2a7-44be-b743-935469b6ac1e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://www.imot.bg/obiavi/prodazhbi/grad-sofiya/geo-milev/dvustaen?type_home=3~8~&raioni=63~",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "2103d3fc-9cc5-48cc-a658-d06e0bb66358",
+      "name": "HTTP Request",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "listing_urls",
+              "cssSelector": "a[href*=\"obiava-\"]",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3c120167-865a-4361-b532-c3153ca94ee7",
+      "name": "Extract Listing URLs",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "html",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "f636730b-a7f0-45e6-a67c-536bfdec56dd",
+      "name": "Split URLs into Items",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "batching": {
+            "batch": {}
+          },
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "c1c7a3e0-0230-4a2e-8551-8ce4dbf55f60",
+      "name": "Fetch Listing Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "div.title"
+            },
+            {
+              "key": "price_total",
+              "cssSelector": "div.cena"
+            },
+            {
+              "key": "location",
+              "cssSelector": "div.location"
+            },
+            {
+              "key": "addiional_params",
+              "cssSelector": "div.adParams"
+            },
+            {
+              "key": "info_items",
+              "cssSelector": "div.info",
+              "returnArray": true
+            },
+            {}
+          ]
+        },
+        "options": {
+          "cleanUpText": true
+        }
+      },
+      "id": "812bf5ca-3f4d-452c-8fe1-8c79a5e8b5a5",
+      "name": "Extract Listing Data",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7df07479-16bb-40b0-97d6-6e025145cab8",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "65fa6120-1354-405b-bf46-786000b6fd32",
+              "name": "price",
+              "value": "={{ $json.price_total }}",
+              "type": "string"
+            },
+            {
+              "id": "26e7b1d2-e694-485f-ab34-8776580f1c2e",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "string"
+            },
+            {
+              "id": "5e93800d-b8c4-4e09-9ca5-4f3b4b57cfaf",
+              "name": "addiional_params",
+              "value": "={{ $json.addiional_params }}",
+              "type": "string"
+            },
+            {
+              "id": "0296fdff-f2fc-4ba6-9678-4a0c942d3a25",
+              "name": "info_items",
+              "value": "={{ $json.info_items }}",
+              "type": "array"
+            },
+            {
+              "id": "d22a495f-fd23-4faf-962b-941a5abad7c3",
+              "name": "url",
+              "value": "={{ $('Transform listing URLS to ARRAY').item.json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8be2a08-f57c-4c50-b2d4-ff1dac47712a",
+      "name": "Prepare Listing Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -704,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "Zn1rzXCr2ADDmjXG",
+          "mode": "list",
+          "cachedResultName": "imot_test",
+          "cachedResultUrl": "/projects/f428FgN3lgsNoYyX/datatables/Zn1rzXCr2ADDmjXG"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "price": "={{ $json.price }}",
+            "location": "={{ $json.location }}",
+            "addiional_params": "={{ $json.addiional_params }}",
+            "info_items": "={{ $json.info_items.join('\\n') }}",
+            "url": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "addiional_params",
+              "displayName": "addiional_params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "info_items",
+              "displayName": "info_items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "id": "20e9fd14-7949-40f2-9212-bf06ec19b060",
+      "name": "Save Listings",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {
+          "encoding": "windows1251"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        -80
+      ],
+      "id": "b713879f-55cb-4298-a815-67860dabf34c",
+      "name": "Decode Bulgarian"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {
+          "encoding": "windows1251"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        -80
+      ],
+      "id": "d1de557a-7d91-4983-9e17-35c303fdc903",
+      "name": "Decode Bulgarian1"
+    },
+    {
+      "parameters": {
+        "content": "## TO-DO: \nAI agent that classiefies the listing as a deal or not according to criteria\nThe Prompt: > \"You are an expert real estate investor in Bulgaria. Review the following list of apartments from Imot.bg. Identify the top 3 'Best Value' deals based on:\n\nPrice per square meter vs. neighborhood average (Geo Milev ~ €2,500/sqm).\nИма в имот.бг такава страница за средни цени. \nFloor level (avoid 1st or last floor).\n\nConstruction type (Brick is preferred over Panel).\nProvide a summary of why each is a good deal.\"\n\nTo-do: Add the URL in the dinal output\nAdd an id for each offering to be unique",
+        "height": 224,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -432
+      ],
+      "id": "b3298d0d-c785-469a-a152-48c424084594",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "# Access the input directly using the global _items variable\n# This is a list of dictionaries like [{\"json\": {...}}, ...]\ninput_items = _items\n\n# Extract the listing_urls array from the first item\nurls = input_items[0][\"json\"].get(\"listing_urls\", [])\n\nunique_urls = set()\noutput = []\n\nfor url in urls:\n    # 1. Strip the #playertag or other fragments\n    clean_url = url.split('#')[0]\n    \n    # 2. Add the protocol\n    if clean_url.startswith('//'):\n        clean_url = f\"https:{clean_url}\"\n    \n    # 3. Deduplicate\n    if clean_url not in unique_urls:\n        unique_urls.add(clean_url)\n        # Wrap back into the n8n item format\n        output.append({\"json\": {\"url\": clean_url}})\n\nreturn output"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "a7c67307-64c3-478f-b762-5ed8e66c8cbe",
+      "name": "Transform listing URLS to ARRAY"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "bg_months = {\n    \"януари\": \"01\", \"февруари\": \"02\", \"март\": \"03\", \"април\": \"04\", \n    \"май\": \"05\", \"юни\": \"06\", \"юли\": \"07\", \"август\": \"08\", \n    \"септември\": \"09\", \"октомври\": \"10\", \"ноември\": \"11\", \"декември\": \"12\"\n}\n\nresults = []\n\nfor item in _items:\n    # 1. Get the original data\n    original = item\n    raw_params = original.get(\"addiional_params\", \"\")\n    info_items = original.get(\"info_items\", [])\n    \n    # 2. Start a NEW dictionary with the original fields\n    # This prevents the \"input equals output\" issue\n    new_data = {\n        \"title\": original.get(\"title\"),\n        \"price\": original.get(\"price\"),\n        \"location\": original.get(\"location\"),\n        \"addiional_params\": raw_params,\n        \"info_items\": info_items,\n        \"url\": original.get(\"url\")\n    }\n\n    # 3. Perform the Clean/Transform Logic\n    try:\n        # Price extraction\n        price_raw = original.get(\"price\", \"\").split(\"€\")[0]\n        price_eur = int(''.join(c for c in price_raw))\n        new_data[\"clean_price_eur\"] = price_eur\n    except:\n        new_data[\"clean_price_eur\"] = 0\n\n    try:\n        # Area extraction\n        area = 0\n        if \"Площ:\" in raw_params:\n            area_part = raw_params.split(\"Площ:\")[1].split(\" \")[0]\n            area = int(''.join(c for c in area_part if c.isdigit()))\n        new_data[\"area_sqm\"] = area\n    except:\n        new_data[\"area_sqm\"] = 0\n\n    try:\n        # Floor extraction\n        floor, total_floors = None, None\n        if \"Етаж:\" in raw_params:\n            floor_info = raw_params.split(\"Етаж:\")[1].split(\"ТEЦ\")[0].split(\"Газ\")[0].strip()\n            if \"от\" in floor_info:\n                parts = floor_info.split(\"от\")\n                floor = int(''.join(c for c in parts[0] if c.isdigit()))\n                total_floors = int(''.join(c for c in parts[1] if c.isdigit()))\n        new_data[\"floor\"] = floor\n        new_data[\"total_floors\"] = total_floors\n    except:\n        new_data[\"floor\"], new_data[\"total_floors\"] = None, None\n\n    # 4. Construction\n    if \"Строителство:\" in raw_params:\n        new_data[\"construction\"] = raw_params.split(\"Строителство:\")[1].split(\",\")[0].strip()\n    else:\n        new_data[\"construction\"] = \"Unknown\"\n\n    # 5. Date Extraction\n    iso_date = None\n    for s in info_items:\n        if \" на \" in s:\n            try:\n                p = s.split()\n                time_val = p[2]\n                day = p[4].zfill(2)\n                month_name = p[5].replace(\",\", \"\").lower()\n                month_val = bg_months.get(month_name, \"01\")\n                year = p[6]\n                iso_date = f\"{year}-{month_val}-{day}T{time_val}:00\"\n                break\n            except:\n                continue\n    new_data[\"last_updated\"] = iso_date\n\n    # 6. Price per m2 calculation\n    if new_data[\"area_sqm\"] > 0:\n        new_data[\"price_per_m2\"] = round(new_data[\"clean_price_eur\"] / new_data[\"area_sqm\"], 2)\n    else:\n        new_data[\"price_per_m2\"] = 0\n\n    # 7. IMPORTANT: Append the NEW dictionary wrapped in json\n    results.append({\"json\": new_data})\n\nreturn results"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -80
+      ],
+      "id": "d94f67b3-c08d-466f-9a55-988ea1403a44",
+      "name": "Normalize Data",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": ":\n\n🏠 Smart Real Estate Scout: Workflow Plan\nPhase 1: The Configuration (User Input)\nTrigger: n8n Form Trigger\n\nFields: Neighborhood (Dropdown), Max Price, Min Sqm, Email.\n\nStorage: Google Sheets: Update/Upsert\n\nSave these preferences to a \"Settings\" sheet. This allows the 8 AM scraper to run autonomously.\n\nResponse: Respond to Webhook\n\nMessage: \"Preferences saved! Your first report will arrive at 8:00 AM.\"\n\nPhase 2: The Morning Engine (Daily @ 8:00 AM)\nTrigger: Schedule Trigger (8:00 AM Europe/Sofia).\n\nData Fetch: Google Sheets: Get Row\n\nPull the active search filters (Max Price, etc.).\n\nScraper: HTTP Request (Imot.bg) + HTML Node\n\nExtract the raw listing blocks (Title, Price, Params, Info_Items, URL).\n\nPhase 3: The Python Intelligence (Normalization)\nNode: Python Code Node (No-Import Version)\n\nPrice: Convert \"150 000 €\" ➔ 150000 (Int).\n\nArea: Extract \"Площ: 60 m2\" ➔ 60 (Int).\n\nMetric: Calculate price_per_m2.\n\nDate: Parse \"18 март\" ➔ 2026-03-18T22:16:00 (ISO).\n\nWrapper: Return as {\"json\": data}.\n\nPhase 4: The \"Elite\" Filtering & AI\nFilter 1 (Freshness): last_updated is after {{ $now.minus({ hours: 24 }) }}.\n\nFilter 2 (User Prefs): Compare clean_price_eur and area_sqm against the Google Sheet values.\n\nAI Analysis: OpenAI/Gemini Node\n\nPrompt: \"Analyze these 5 listings. Which one is the best value for Geo Milev? Highlight any 'Act 16' or 'Renovated' status.\"\n\nOutput: best_offer_summary.\n\nPhase 5: Delivery (The Digest)\nAggregate Node: Combine all matching listings into one list.\n\nGmail Node:\n\nSubject: [Real Estate] Today's Top Picks in {{ $node.Sheet.json.Neighborhood }}\n\nBody: Include the AI Summary + a Markdown table of all links/prices.\n\n🚀 Great Functionalities to Toggle:\n[ ] Price Drop Alert: Compare current price with the last price in Sheets.\n\n[ ] Telegram Notify: If price_per_m2 is < 2000€, send an instant DM.\n\n[ ] Map Link: Generate google.com/maps/search/{{location}}.",
+        "height": 320,
+        "width": 592,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -448
+      ],
+      "id": "86c941ad-6a02-464d-96c5-8a6efbe2daef",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "smartcrawler",
+        "url": "https://www.imot.bg/obiava-1b177305403653743-prodava-dvustaen-apartament-grad-sofiya-obelya-2",
+        "prompt": "Extract the url of each listing, the price and the neighborhood of the listing and the square meters "
+      },
+      "type": "n8n-nodes-scrapegraphai.scrapegraphAi",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        416
+      ],
+      "id": "0691b4a4-f752-46c2-ba25-53699341fdde",
+      "name": "Give a single URL – the AI crawler follows internal links to extract structured data across multiple pages"
+    },
+    {
+      "parameters": {
+        "resource": "Account",
+        "operation": "teamCreditUsage",
+        "requestOptions": {}
+      },
+      "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+      "typeVersion": 1,
+      "position": [
+        64,
+        224
+      ],
+      "id": "58ab7dc7-161a-4531-b296-b055590ec527",
+      "name": "Get team credit usage",
+      "credentials": {
+        "firecrawlApi": {
+          "id": "rL7M5u6e5HbZSe71",
+          "name": "Firecrawl API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "scrape",
+        "url": "https://www.imot.bg/obiava-1b177161084537010-prodava-dvustaen-apartament-grad-sofiya-geo-milev",
+        "requestOptions": {}
+      },
+      "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+      "typeVersion": 1,
+      "position": [
+        272,
+        224
+      ],
+      "id": "b988e607-636a-4025-96fd-7bcba41c56c7",
+      "name": "/scrape",
+      "credentials": {
+        "firecrawlApi": {
+          "id": "rL7M5u6e5HbZSe71",
+          "name": "Firecrawl API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Use Upsert pattern for data base insert and sent to Gmail only new listings",
+        "height": 176,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "53b6f542-57d3-42cb-aec5-a24dcb33c21b",
+      "name": "Sticky Note2"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Decode Bulgarian",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Listing URLs": {
+      "main": [
+        [
+          {
+            "node": "Transform listing URLS to ARRAY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split URLs into Items": {
+      "main": [
+        []
+      ]
+    },
+    "Fetch Listing Page": {
+      "main": [
+        [
+          {
+            "node": "Decode Bulgarian1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Listing Data": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Listing Data": {
+      "main": [
+        []
+      ]
+    },
+    "Decode Bulgarian": {
+      "main": [
+        [
+          {
+            "node": "Extract Listing URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decode Bulgarian1": {
+      "main": [
+        [
+          {
+            "node": "Extract Listing Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform listing URLS to ARRAY": {
+      "main": [
+        [
+          {
+            "node": "Fetch Listing Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "Save Listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get team credit usage": {
+      "main": [
+        [
+          {
+            "node": "/scrape",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

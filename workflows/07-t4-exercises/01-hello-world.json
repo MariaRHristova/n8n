@@ -1,0 +1,82 @@
+{
+  "name": "[Ex1] [T4] Hello world",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -112
+      ],
+      "id": "db784613-eeda-490f-b101-3e0320ce24b4",
+      "name": "Start"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01fc6c5b-b5c2-4bc3-b038-8d2d08e930f1",
+              "name": "message",
+              "value": "Hello, n8n!",
+              "type": "string"
+            },
+            {
+              "id": "786a2fb5-95dd-4fdb-84a4-004e8ce68480",
+              "name": "author",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a6dbc9a6-5451-484f-9232-14ab0c679050",
+              "name": "year",
+              "value": 2026,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -112
+      ],
+      "id": "3d7c1794-217a-466b-bf2d-0bc399869f35",
+      "name": "Hello world"
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Hello world",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "name": "Mimi Hristova",
+          "city": "Varna"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": null
+}

@@ -1,0 +1,76 @@
+{
+  "name": "CP-07B-Error-Handler",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "CP-07B-Error-Handler\n\nCatches workflow errors and sends an alert to Telegram so failures do not stay unnoticed.\n\nSteps:\n1. Error Trigger starts when another workflow fails.\n2. Reads the failed workflow name and error message.\n3. Telegram sends an error alert with workflow name, error details, and time.\n4. This workflow is selected as the Error Workflow in CP-07A-Test-Workflow settings.",
+        "height": 232,
+        "width": 444
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "9b5da975-593f-497d-8422-b7c4a6067aa9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "99535de1-f8fb-4ec0-b362-0577b4bd1a18",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "chatId": "8767865172",
+        "text": "=\"ГРЕШКА в ContentPilot!\"  \"Workflow: {{ $json.workflow.name }}\"  \"Грешка: {{ $json.execution.error.message }}\"  \"Кога: {{ $now.toFormat('HH:mm dd.MM.yyyy') }}\"",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e0675ca6-0e18-4d90-9e28-e1e265bf2eb8",
+      "name": "Send a Telegram Alert",
+      "webhookId": "0961397e-b19e-44ea-ab07-13c24bec0b43",
+      "credentials": {
+        "telegramApi": {
+          "id": "0UGja7NV2qDoAzoR",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "07 MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## TO-DO: \nSet up another MCP server with authentication to practice\n\n\nConnect it to Claude"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "25e01e62-77be-47da-acf5-a58842e28431",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

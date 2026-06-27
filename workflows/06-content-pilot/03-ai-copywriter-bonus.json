@@ -1,0 +1,397 @@
+{
+  "name": "CP-03-AI-Copywriter-Bonus",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Задача 3: AI Копирайтър (L1 + L3) - 20 точки\n\nЦел:\n\nAI генерира SEO съдържание (meta title, meta description, intro) от тема и ключова дума. Резултатът се записва в Google Doc, а метаданните - в Google Sheets.",
+        "height": 192,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        432,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "2be4e51c-1935-4541-bb4d-4f401ae368f7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        864,
+        48
+      ],
+      "id": "820323b9-3f7a-445a-9ab8-71f62be0705c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "id"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        272
+      ],
+      "id": "52991ab8-79e6-4e2f-8454-df4602eaddfa",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c7e79e1-465d-417d-a1d5-a3db6702d3e6",
+              "name": "prompt",
+              "value": "=Ти си SEO копирайтър. Напиши за темата \"{{ $json['Тема'] }}\"  с ключова дума \"{{ $json['Ключова дума'] }}\" в тон \"{{ $json['Тон'] }}\".   Върни САМО валиден JSON:  {  \"meta_title\": \"заглавие до 60 символа с ключовата дума\",  \"meta_description\": \"описание до 155 символа\",  \"intro\": \"уводен параграф от 3-4 изречения\"  }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        48
+      ],
+      "id": "2af02908-9a9c-415f-96b5-c7aad859ff45",
+      "name": "Set: Prepare Prompt"
+    },
+    {
+      "parameters": {
+        "folderId": "1d19KIgg6xhiIap7VIJQYbad4pGGgoaMD",
+        "title": "={{ $json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        48
+      ],
+      "id": "010e0271-1bbe-43e0-b5ae-eed78ee72b87",
+      "name": "Google Docs: Create",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6MiW1iicFihwkseI",
+          "name": "Google Docs OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pWbQI_zWyH76ldo3xO-yHQma2OjeOCuVtOtrdzLiIc0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic": "={{ $('Form Trigger').item.json[\"Тема\"] }}",
+            "tone": "={{ $('Form Trigger').item.json[\"Тон\"] }}",
+            "doc_link": "=https://docs.google.com/document/d/{{ $('Google Docs: Create').item.json.id }}/edit",
+            "created_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "topic",
+              "displayName": "topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tone",
+              "displayName": "tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc_link",
+              "displayName": "doc_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1888,
+        48
+      ],
+      "id": "346cbdc3-948a-4076-93f3-9cf83dac7c6b",
+      "name": "Google Sheets: Metadata",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mhristova27@gmail.com",
+        "subject": "=\"ContentPilot Draft: {{ $('Form Trigger').item.json['Тема'] }}",
+        "message": "={{ $json.doc_link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2112,
+        48
+      ],
+      "id": "31120330-8ae0-4671-a98c-a3d7bea13198",
+      "name": "Gmail: Send Draft",
+      "webhookId": "33348730-5b53-4125-84a1-6fc1a2968537",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ziQphSIVo8i3Ru2h",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const ai = JSON.parse($input.first().json.text);\n\nconst content = `Meta Title: ${ai.meta_title}\\n\\nMeta Description: ${ai.meta_description}\\n\\nIntro:\\n${ai.intro}`;\n\nconst prompt = $input.first().json.prompt || '';\nconst titleMatch = prompt.match(/темата \"([^\"]+)\"/);\nreturn [{ json: { content, title: `ContentPilot Draft - ${titleMatch ? titleMatch[1] : 'Draft'}` } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        48
+      ],
+      "id": "45e76904-bb01-4c21-88e8-93eb74ac30d8",
+      "name": "Code: Format Content"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Code: Format Content').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        48
+      ],
+      "id": "0a8cae12-ba42-4035-bd57-97d60a738ce7",
+      "name": "Google Docs: Update",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6MiW1iicFihwkseI",
+          "name": "Google Docs OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "AI Copywriter",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Тема",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Ключова дума",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Тон",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "professional"
+                  },
+                  {
+                    "option": "friendly"
+                  },
+                  {
+                    "option": "casual"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        416,
+        48
+      ],
+      "id": "0e4cedd7-11db-45ed-8eba-33f55df709f8",
+      "name": "Form Trigger",
+      "webhookId": "489b0c5c-2d0e-4081-b0bd-13e3658b5eff"
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code: Format Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs: Create": {
+      "main": [
+        [
+          {
+            "node": "Google Docs: Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Metadata": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Send Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Format Content": {
+      "main": [
+        [
+          {
+            "node": "Google Docs: Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs: Update": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set: Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

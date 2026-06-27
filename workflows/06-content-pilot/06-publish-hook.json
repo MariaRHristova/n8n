@@ -1,0 +1,272 @@
+{
+  "name": "CP-06-Publish-Hook",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Публикационен Hook",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Заглавие",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Съдържание",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Платформа",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "wordpress"
+                  },
+                  {
+                    "option": "facebook"
+                  },
+                  {
+                    "option": "linkedin"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -816,
+        144
+      ],
+      "id": "4e591562-256b-4324-bca2-670ddae5dcc0",
+      "name": "Form trigger",
+      "webhookId": "a123286a-e7d3-44c3-bba1-4a01411075c4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba01dd3e-c6ca-47e9-a4da-2da23570db72",
+              "name": "title",
+              "value": "={{ $json['Заглавие'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b337ebb4-9232-4471-9acd-42efb2f13135",
+              "name": "content",
+              "value": "={{ $json['Съдържание'] }}",
+              "type": "string"
+            },
+            {
+              "id": "eaa6a093-d79c-4ead-9279-da8687bb53da",
+              "name": "platform",
+              "value": "={{ $json['Платформа'] }}",
+              "type": "string"
+            },
+            {
+              "id": "957e0167-07a4-4917-a140-2ab8024e9609",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        144
+      ],
+      "id": "6fb58347-1383-4615-960b-94c2cc6e06ac",
+      "name": "Set: Prepare"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.platform }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $json.timestamp }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -368,
+        144
+      ],
+      "id": "f0c97fd9-0c59-4a5a-af64-334fbeafe081",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "CP-06-Publish-Hook\n\nSends article data to a test publishing API and logs the result in Google Sheets.\n\nSteps:\n1. Form Trigger collects title, content, and platform.\n2. Set: Prepare Payload creates title, content, platform, and timestamp.\n3. HTTP Request sends a POST request to httpbin.org.\n4. Google Sheets logs timestamp, platform, status, and response URL.\n5. The log confirms whether the publish request was successful.",
+        "height": 220,
+        "width": 544,
+        "color": 4
+      },
+      "id": "d678c8e1-d5fa-4229-9add-3672c28b60ae",
+      "name": "Описание",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xVspASEV0zbDdG-ZivD_mp2uhlU7z2dFzUWjNOJm0gg",
+          "mode": "list",
+          "cachedResultName": "ContentPilot Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xVspASEV0zbDdG-ZivD_mp2uhlU7z2dFzUWjNOJm0gg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xVspASEV0zbDdG-ZivD_mp2uhlU7z2dFzUWjNOJm0gg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+            "platform": "={{ $json.json.platform }}",
+            "status": "={{ $json.url ? 'success' : 'error' }}",
+            "response_url": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "response_url",
+              "displayName": "response_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        144
+      ],
+      "id": "08515e43-0175-4b49-8196-33101daee767",
+      "name": "Google Sheets: Log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Form trigger": {
+      "main": [
+        [
+          {
+            "node": "Set: Prepare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Prepare": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

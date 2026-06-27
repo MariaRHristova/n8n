@@ -1,0 +1,412 @@
+{
+  "name": "05 Data Tables — Dead Letter Queue",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "[Manual Trigger] --> [Set: 3 items] --> [Loop] --> [HTTP Request] | On Error: [Data Table: Insert] Data Table: failed_requests Columns: payload, error_message, retry_count, status, created_at"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "328239cb-01ad-4eee-9c6d-d57d366944f3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        424
+      ],
+      "id": "e391a566-3a9f-42c1-b0c8-2c4db322dc93",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [ { url: 'https://catfact.ninja/fact', name: 'valid' },\n\n{ url: 'https://catfact.ninja/OOPS', name: 'invalid' }, { url: 'https://httpstat.us/500', name: 'server-error' }, ]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        424
+      ],
+      "id": "ab415cdb-0b1c-4fd6-9d96-dbd0534a4764",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        432,
+        424
+      ],
+      "id": "8079ef21-e90b-46e6-b84f-d7a1e6bd41f9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        656,
+        112
+      ],
+      "id": "9b5254fa-2185-485b-82c9-1417f02a9cc6",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "8IMwnmMyXqPQ03fU",
+          "mode": "list",
+          "cachedResultName": "failed_request",
+          "cachedResultUrl": "/projects/f428FgN3lgsNoYyX/datatables/8IMwnmMyXqPQ03fU"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $('HTTP Request').item.json.error.request.url }}",
+            "payload": "={{ JSON.stringify($('HTTP Request').item.json.error) }}",
+            "error_message": "={{ $('HTTP Request').item.json.error.message }}",
+            "retry_count": "=0"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "payload",
+              "displayName": "payload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "retry_count",
+              "displayName": "retry_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        184
+      ],
+      "id": "4da925be-ffb1-488a-b804-f6dfedbf00ec",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "content": "### TO-DO: \nUpsert he retry_count in the data table"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "a7150aba-d602-483c-a4ba-920b50095ab0",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "8IMwnmMyXqPQ03fU",
+          "mode": "list",
+          "cachedResultName": "failed_request",
+          "cachedResultUrl": "/projects/f428FgN3lgsNoYyX/datatables/8IMwnmMyXqPQ03fU"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "url",
+              "keyValue": "={{ $('Check if row exists').item.json.url }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "payload": "={{ $('Check if row exists').item.json.payload }}",
+            "error_message": "={{ $('HTTP Request').item.json.error.message }}",
+            "url": "={{ $('Check if row exists').item.json.url }}",
+            "retry_count": "={{ $('Check if row exists').item.json.retry_count + 1 }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "payload",
+              "displayName": "payload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "retry_count",
+              "displayName": "retry_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        376
+      ],
+      "id": "10547027-e36c-4c2a-bad0-e219eafab897",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "8IMwnmMyXqPQ03fU",
+          "cachedResultName": "failed_request",
+          "cachedResultUrl": "/projects/f428FgN3lgsNoYyX/datatables/8IMwnmMyXqPQ03fU"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "url",
+              "keyValue": "={{ $('HTTP Request').item.json.error.request.url }}"
+            }
+          ]
+        }
+      },
+      "id": "6a8d8ffa-db6d-4616-b428-28fa3b750914",
+      "name": "Check if row exists",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "type": "number",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "63edb944-7d2e-4b8e-b323-1a20815be131",
+      "name": "Row exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1104,
+        112
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check if row exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if row exists": {
+      "main": [
+        [
+          {
+            "node": "Row exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row exists?": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

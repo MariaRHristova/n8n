@@ -1,0 +1,38 @@
+{
+  "name": "04 Resilient API Flow Error Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7538b697-d338-4b2a-972e-64f961a958f2",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## TO-DO: \nConnect to the main workflow"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "d1b6dcf0-ebcc-46c3-a16c-053a6478fb4d",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

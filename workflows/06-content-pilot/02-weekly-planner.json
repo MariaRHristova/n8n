@@ -1,0 +1,179 @@
+{
+  "name": "CP-02-Weekly-Planner",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "CP-02-Weekly-Planner\n\nRuns every Monday morning and checks how many draft content ideas are waiting for processing.\n\nSteps:\n1. Schedule Trigger starts the workflow every Monday at 09:00 Europe/Sofia time.\n2. Google Sheets: Read loads ideas from ContentPilot Ideas.\n3. IF node filters only rows where status is draft.\n4. Telegram sends a message with the number of draft ideas.",
+        "height": 256,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "4dc23c36-3c92-4a42-8e41-7767b7826789",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "80d0f728-67f7-425a-a0a6-0f12a48dc519",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1IIszWG3AWHYCcx831bUygFFH9f6uCWD6C0ulqtY-1HY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IIszWG3AWHYCcx831bUygFFH9f6uCWD6C0ulqtY-1HY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "f9d339a2-7e19-4228-8833-0635154c072e",
+      "name": "Google Sheets: Read",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f365ce1c-508d-487d-88ae-1cfce6c87511",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "draft",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "915be1bb-34fa-4d5b-b9b0-0f7e2180e019",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "8767865172",
+        "text": "=\"ContentPilot: Тази седмица имаш {{ $input.all().length }} идеи за обработка!\"",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        -80
+      ],
+      "id": "2d377035-53db-4ea2-acb1-74b5b7f37780",
+      "name": "Send a text message",
+      "webhookId": "f4ffbe36-07a2-417b-aa5a-17eed7868a25",
+      "credentials": {
+        "telegramApi": {
+          "id": "0UGja7NV2qDoAzoR",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

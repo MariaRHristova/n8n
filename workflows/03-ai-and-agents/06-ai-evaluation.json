@@ -1,0 +1,201 @@
+{
+  "name": "06 AI Evaluation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "##  AI Evaluation\n[Нормален] Manual Trigger --> LLM Chain (classifier) [Оценяване] Evaluation Trigger --> same LLM Chain --> Evaluation node dataset: Google Sheet",
+        "height": 176
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "ea47623e-05df-494a-8664-0119c87ae426",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -96
+      ],
+      "id": "61296df4-5f9d-4ce3-a504-61b4dc0205ab",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "setMetrics",
+        "metric": "categorization",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.evaluation",
+      "typeVersion": 4.8,
+      "position": [
+        496,
+        -96
+      ],
+      "id": "e1271a86-e41c-4c8f-8774-f18d3d4003aa",
+      "name": "Evaluation"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        -96
+      ],
+      "id": "f3dea01e-93ad-4181-aa03-1b4fa1a93bb1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        144,
+        -96
+      ],
+      "id": "57620fa0-c160-45cf-918b-b14b1003f4ea",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        216,
+        128
+      ],
+      "id": "948cf3a2-4f9b-4e35-a035-89be0163a304",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rxQqlIqeLFORxvPf",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "source": "googleSheets",
+        "documentId": {
+          "__rl": true,
+          "value": "1LTSf5z762rxz3VO6q2ITo6Rj0ne3rC-zT7k5aYxxKxo",
+          "mode": "list",
+          "cachedResultName": "n8n_ai_evaluation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LTSf5z762rxz3VO6q2ITo6Rj0ne3rC-zT7k5aYxxKxo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.evaluationTrigger",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        232
+      ],
+      "id": "cc908293-9f5d-451b-8e68-d9abf26bf2e8",
+      "name": "When fetching a dataset row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0o1a8dYfiPrO3UUq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## TO-DO: \nFinish the workflow\n\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -448,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "3000e6e0-d779-4081-ba16-f4ea5a974828",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluation": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

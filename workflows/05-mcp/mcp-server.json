@@ -1,0 +1,127 @@
+{
+  "name": "MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "##TO-DO: \n** Set up the MCP server"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "97222563-6c34-480a-8512-cfffe528191c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "path": "7d0f5ecb-52e7-4326-a3b2-a2d3df110dc8"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -504,
+        176
+      ],
+      "id": "f8806cc7-a8a3-4c44-a5b3-bd52cbda4941",
+      "name": "MCP Server Trigger",
+      "webhookId": "7d0f5ecb-52e7-4326-a3b2-a2d3df110dc8"
+    },
+    {
+      "parameters": {
+        "name": "check_weather",
+        "description": "Check the current weather in a city. Provide the city name to get temperature, conditions, and other weather information.",
+        "language": "python",
+        "pythonCode": "# Weather checking function with mock data\n# Input: _query contains the city name\n# Output: Returns weather information as a string\n\nimport json\nimport random\n\n# Parse the city name from the query\ncity = _query.strip()\n\n# Mock weather data for demonstration\nweather_conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Rainy', 'Stormy', 'Snowy', 'Foggy']\nwind_directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']\n\n# Generate mock weather data\ntemperature = random.randint(-10, 35)\nfeels_like = temperature + random.randint(-5, 5)\ncondition = random.choice(weather_conditions)\nhumidity = random.randint(30, 90)\nwind_speed = random.randint(0, 30)\nwind_direction = random.choice(wind_directions)\npressure = random.randint(980, 1030)\n\n# Format the weather information\nweather_info = f\"\"\"Weather in {city}:\n- Temperature: {temperature}°C (Feels like {feels_like}°C)\n- Conditions: {condition}\n- Humidity: {humidity}%\n- Wind: {wind_speed} km/h {wind_direction}\n- Pressure: {pressure} hPa\n\nNote: This is simulated weather data for demonstration purposes.\"\"\"\n\nreturn weather_info"
+      },
+      "id": "8061de46-6631-4fdc-a40b-896c0454a8cc",
+      "name": "Weather Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        400
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        400
+      ],
+      "id": "fe656eed-e2b5-4d4d-a4d0-714128cf4c3d",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "mvVwC7vvwSY9WzRR",
+          "name": "OpenWeatherMap account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "Check the current weather in a city using a weather API. Provide the city name to get real-time temperature, conditions, humidity, and other weather information.",
+        "url": "=https://wttr.in/{{ $fromAI(\"city\", \"The city name to check weather for\", \"string\") }}?format=j1",
+        "options": {}
+      },
+      "id": "98e214c5-a257-4531-9ad3-eb986bdb57c7",
+      "name": "HTTP Weather Tool",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        -304,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Weather Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Weather Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
